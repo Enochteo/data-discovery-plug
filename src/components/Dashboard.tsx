@@ -27,7 +27,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataRow } from "@/types/data";
 import ErrorBoundary from "./ErrorBoundary";
-import Skeleton from "./ui/Skeleton";
+import Skeleton from "./ui/skeleton";
 
 const DataTable = lazy(() => import("./DataTable"));
 const ChartSection = lazy(() => import("./ChartSection"));
