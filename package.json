@@ -1,11 +1,18 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "enochs-data-discovery",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Enochs Data discovery platform — Receive data insights like you never would on any other platform",
+  "author": "Enoch",
   "type": "module",
+  "packageManager": "npm@9",
+  "engines": {
+    "node": ">=18 <24"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "start": "node server/insight.js",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"

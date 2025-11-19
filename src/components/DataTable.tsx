@@ -1,27 +1,48 @@
-
-import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Search, ArrowUpDown, ArrowUp, ArrowDown, Download, Filter } from 'lucide-react';
+import { useState, useMemo } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Download,
+  Filter,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DataRow } from '@/types/data';
-import { getDataSummary } from '@/utils/dataAnalysis';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DataRow } from "@/types/data";
+import { getDataSummary } from "@/utils/dataAnalysis";
 
 interface DataTableProps {
   data: DataRow[];
 }
 
-type SortDirection = 'asc' | 'desc' | null;
+type SortDirection = "asc" | "desc" | null;
 
 const DataTable = ({ data }: DataTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [columnFilter, setColumnFilter] = useState<string>('all');
+  const [columnFilter, setColumnFilter] = useState<string>("all");
 
   const summary = useMemo(() => getDataSummary(data), [data]);
   const columns = useMemo(() => {
@@ -34,22 +55,22 @@ const DataTable = ({ data }: DataTableProps) => {
 
     // Filter by search term
     if (searchTerm) {
-      filtered = data.filter(row => 
-        Object.values(row).some(value => 
+      filtered = data.filter((row) =>
+        Object.values(row).some((value) =>
           String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
 
     // Filter by column type
-    if (columnFilter !== 'all') {
+    if (columnFilter !== "all") {
       const columnsOfType = Object.entries(summary.columnTypes)
         .filter(([_, type]) => type === columnFilter)
         .map(([column, _]) => column);
-      
-      filtered = filtered.map(row => {
+
+      filtered = filtered.map((row) => {
         const filteredRow: DataRow = {};
-        columnsOfType.forEach(col => {
+        columnsOfType.forEach((col) => {
           if (col in row) filteredRow[col] = row[col];
         });
         return filteredRow;
@@ -61,20 +82,20 @@ const DataTable = ({ data }: DataTableProps) => {
       filtered = [...filtered].sort((a, b) => {
         const aVal = a[sortColumn];
         const bVal = b[sortColumn];
-        
+
         // Handle null/undefined values
         if (aVal == null && bVal == null) return 0;
-        if (aVal == null) return sortDirection === 'asc' ? 1 : -1;
-        if (bVal == null) return sortDirection === 'asc' ? -1 : 1;
-        
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        if (aVal == null) return sortDirection === "asc" ? 1 : -1;
+        if (bVal == null) return sortDirection === "asc" ? -1 : 1;
+
+        if (typeof aVal === "number" && typeof bVal === "number") {
+          return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
         }
-        
+
         const aStr = String(aVal).toLowerCase();
         const bStr = String(bVal).toLowerCase();
-        
-        if (sortDirection === 'asc') {
+
+        if (sortDirection === "asc") {
           return aStr.localeCompare(bStr);
         } else {
           return bStr.localeCompare(aStr);
@@ -83,7 +104,14 @@ const DataTable = ({ data }: DataTableProps) => {
     }
 
     return filtered;
-  }, [data, searchTerm, sortColumn, sortDirection, columnFilter, summary.columnTypes]);
+  }, [
+    data,
+    searchTerm,
+    sortColumn,
+    sortDirection,
+    columnFilter,
+    summary.columnTypes,
+  ]);
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -94,31 +122,32 @@ const DataTable = ({ data }: DataTableProps) => {
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      if (sortDirection === 'asc') {
-        setSortDirection('desc');
-      } else if (sortDirection === 'desc') {
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
         setSortDirection(null);
         setSortColumn(null);
       } else {
-        setSortDirection('asc');
+        setSortDirection("asc");
       }
     } else {
       setSortColumn(column);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
     setCurrentPage(1);
   };
 
   const getSortIcon = (column: string) => {
-    if (sortColumn !== column) return <ArrowUpDown className="h-3 w-3 opacity-50" />;
-    if (sortDirection === 'asc') return <ArrowUp className="h-3 w-3" />;
-    if (sortDirection === 'desc') return <ArrowDown className="h-3 w-3" />;
+    if (sortColumn !== column)
+      return <ArrowUpDown className="h-3 w-3 opacity-50" />;
+    if (sortDirection === "asc") return <ArrowUp className="h-3 w-3" />;
+    if (sortDirection === "desc") return <ArrowDown className="h-3 w-3" />;
     return <ArrowUpDown className="h-3 w-3 opacity-50" />;
   };
 
   const formatValue = (value: any) => {
-    if (value === null || value === undefined) return '-';
-    if (typeof value === 'number') {
+    if (value === null || value === undefined) return "-";
+    if (typeof value === "number") {
       // Format large numbers with proper separators
       if (Math.abs(value) >= 1000) {
         return value.toLocaleString();
@@ -129,42 +158,46 @@ const DataTable = ({ data }: DataTableProps) => {
       }
       return value.toString();
     }
-    if (typeof value === 'boolean') {
-      return value ? '✓' : '✗';
+    if (typeof value === "boolean") {
+      return value ? "✓" : "✗";
     }
     return String(value);
   };
 
   const getColumnType = (column: string) => {
-    return summary.columnTypes[column] || 'text';
+    return summary.columnTypes[column] || "text";
   };
 
   const exportFilteredData = () => {
-    const visibleColumns = columnFilter === 'all' ? columns : 
-      Object.entries(summary.columnTypes)
-        .filter(([_, type]) => type === columnFilter)
-        .map(([column, _]) => column);
+    const visibleColumns =
+      columnFilter === "all"
+        ? columns
+        : Object.entries(summary.columnTypes)
+            .filter(([_, type]) => type === columnFilter)
+            .map(([column, _]) => column);
 
     const csvContent = [
-      visibleColumns.join(','),
-      ...filteredAndSortedData.map(row => 
-        visibleColumns.map(col => formatValue(row[col])).join(',')
-      )
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+      visibleColumns.join(","),
+      ...filteredAndSortedData.map((row) =>
+        visibleColumns.map((col) => formatValue(row[col])).join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `filtered_data_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `filtered_data_${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const visibleColumns = columnFilter === 'all' ? columns : 
-    Object.entries(summary.columnTypes)
-      .filter(([_, type]) => type === columnFilter)
-      .map(([column, _]) => column);
+  const visibleColumns =
+    columnFilter === "all"
+      ? columns
+      : Object.entries(summary.columnTypes)
+          .filter(([_, type]) => type === columnFilter)
+          .map(([column, _]) => column);
 
   return (
     <Card>
@@ -173,10 +206,11 @@ const DataTable = ({ data }: DataTableProps) => {
           <CardTitle className="flex items-center gap-2">
             Data Explorer
             <span className="text-sm font-normal text-muted-foreground">
-              ({filteredAndSortedData.length.toLocaleString()} of {data.length.toLocaleString()} rows)
+              ({filteredAndSortedData.length.toLocaleString()} of{" "}
+              {data.length.toLocaleString()} rows)
             </span>
           </CardTitle>
-          
+
           <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -188,13 +222,17 @@ const DataTable = ({ data }: DataTableProps) => {
                   setCurrentPage(1);
                 }}
                 className="pl-10 w-full sm:w-[250px]"
+                aria-label="Search data"
               />
             </div>
-            
-            <Select value={columnFilter} onValueChange={(value) => {
-              setColumnFilter(value);
-              setCurrentPage(1);
-            }}>
+
+            <Select
+              value={columnFilter}
+              onValueChange={(value) => {
+                setColumnFilter(value);
+                setCurrentPage(1);
+              }}
+            >
               <SelectTrigger className="w-full sm:w-[140px]">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue />
@@ -205,35 +243,46 @@ const DataTable = ({ data }: DataTableProps) => {
                 <SelectItem value="text">Text Only</SelectItem>
               </SelectContent>
             </Select>
-            
-            <Button variant="outline" onClick={exportFilteredData} className="flex items-center gap-2">
+
+            <Button
+              variant="outline"
+              onClick={exportFilteredData}
+              className="flex items-center gap-2"
+            >
               <Download className="h-4 w-4" />
-              Export
+              <span>Export</span>
             </Button>
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="rounded-md border">
           <div className="overflow-x-auto">
-            <Table>
+            <Table aria-label="Data table">
+              <caption className="sr-only">
+                Dataset table showing uploaded rows and columns
+              </caption>
               <TableHeader>
                 <TableRow>
                   {visibleColumns.map((column) => (
-                    <TableHead 
-                      key={column} 
+                    <TableHead
+                      key={column}
                       className="cursor-pointer hover:bg-muted/50 transition-colors select-none"
                       onClick={() => handleSort(column)}
                     >
                       <div className="flex items-center justify-between min-w-[100px]">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{column}</span>
-                          <span className={`text-xs px-1.5 py-0.5 rounded ${
-                            getColumnType(column) === 'numeric' ? 'bg-blue-100 text-blue-700' :
-                            getColumnType(column) === 'boolean' ? 'bg-green-100 text-green-700' :
-                            'bg-gray-100 text-gray-700'
-                          }`}>
+                          <span
+                            className={`text-xs px-1.5 py-0.5 rounded ${
+                              getColumnType(column) === "numeric"
+                                ? "bg-blue-100 text-blue-700"
+                                : getColumnType(column) === "boolean"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
                             {getColumnType(column)}
                           </span>
                         </div>
@@ -246,24 +295,28 @@ const DataTable = ({ data }: DataTableProps) => {
               <TableBody>
                 {paginatedData.length === 0 ? (
                   <TableRow>
-                    <TableCell 
-                      colSpan={visibleColumns.length} 
+                    <TableCell
+                      colSpan={visibleColumns.length}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      {searchTerm ? `No results found for "${searchTerm}"` : 'No data available'}
+                      {searchTerm
+                        ? `No results found for "${searchTerm}"`
+                        : "No data available"}
                     </TableCell>
                   </TableRow>
                 ) : (
                   paginatedData.map((row, index) => (
-                    <TableRow 
+                    <TableRow
                       key={index}
                       className="hover:bg-muted/50 transition-colors"
                     >
                       {visibleColumns.map((column) => (
-                        <TableCell 
+                        <TableCell
                           key={column}
                           className={`${
-                            getColumnType(column) === 'numeric' ? 'text-right font-mono' : ''
+                            getColumnType(column) === "numeric"
+                              ? "text-right font-mono"
+                              : ""
                           }`}
                         >
                           {formatValue(row[column])}
@@ -281,14 +334,23 @@ const DataTable = ({ data }: DataTableProps) => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div>
-              Showing {Math.min(filteredAndSortedData.length, (currentPage - 1) * itemsPerPage + 1)} to{' '}
-              {Math.min(filteredAndSortedData.length, currentPage * itemsPerPage)} of{' '}
-              {filteredAndSortedData.length.toLocaleString()} entries
-              {searchTerm && ` (filtered from ${data.length.toLocaleString()} total)`}
+              Showing{" "}
+              {Math.min(
+                filteredAndSortedData.length,
+                (currentPage - 1) * itemsPerPage + 1
+              )}{" "}
+              to{" "}
+              {Math.min(
+                filteredAndSortedData.length,
+                currentPage * itemsPerPage
+              )}{" "}
+              of {filteredAndSortedData.length.toLocaleString()} entries
+              {searchTerm &&
+                ` (filtered from ${data.length.toLocaleString()} total)`}
             </div>
-            
-            <Select 
-              value={itemsPerPage.toString()} 
+
+            <Select
+              value={itemsPerPage.toString()}
               onValueChange={(value) => {
                 setItemsPerPage(parseInt(value));
                 setCurrentPage(1);
@@ -305,7 +367,7 @@ const DataTable = ({ data }: DataTableProps) => {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -323,7 +385,7 @@ const DataTable = ({ data }: DataTableProps) => {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            
+
             <div className="flex items-center gap-1">
               <span className="text-sm">Page</span>
               <Input
@@ -341,7 +403,7 @@ const DataTable = ({ data }: DataTableProps) => {
               />
               <span className="text-sm">of {totalPages}</span>
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"
